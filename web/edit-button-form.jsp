@@ -1,5 +1,6 @@
 <form method="GET" id="editForm" action="${pageContext.request.contextPath}/edit-task">
   <input type="hidden" id="hiddenIdInput" name="id">
+  <input type="hidden" id="hiddenCategoryToFilter" name="selectedCategory">
   <label for="name">Name:</label><br>
   <input type="text" style="width: 465px;" id="name" name="name"><br>
   <label for="description">Description:</label>
