@@ -60,6 +60,18 @@ public class DBManager {
         return tasks;
     }
 
+    public static ArrayList<Task> getTasksByCategory(String category) {
+        ArrayList<Task> filtered = new ArrayList<>();
+        for (Task task: tasks) {
+            if (task.getCategory() != null) {
+                if (task.getCategory().equals(category)) {
+                    filtered.add(task);
+                }
+            }
+        }
+        return filtered;
+    }
+
     public static void removeTask(long id) {
         Task toRemove = null;
         for (Task task : tasks) {

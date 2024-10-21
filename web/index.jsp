@@ -2,7 +2,9 @@
 <%@ page import="models.Task" %>
 <%@ page import="functools.Functools" %>
 <%@ page import="java.time.LocalDateTime" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<% String selectedCategory = (String) request.getAttribute("selectedCategory"); %>
 <html>
 <head>
     <title>Home</title>
@@ -45,7 +47,6 @@
             </div>
         </div>
 
-
         <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#addTaskModal">
             <span>
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
@@ -56,13 +57,27 @@
         </button>
 
         <%
-            if (DBManager.tasks.isEmpty()) {
+            ArrayList<Task> tasks;
+            if (selectedCategory == null) {
+                tasks = DBManager.getTasks();
+            } else {
+                tasks = DBManager.getTasksByCategory(selectedCategory);
+            }
+
+            if (selectedCategory != null) { %>
+            <div>
+                <p class="text-warning">You have applied a filter for the following category: <%=selectedCategory%></p>
+            </div>
+        <% } %>
+        <%
+            if (tasks.isEmpty()) {
         %>
         <div>
             <p>Oops, looks like you don't have any tasks!</p>
         </div>
         <%
             } else {
+
         %>
                 <div>
                     <table class="table table-primary border border-secondary border-2">
@@ -76,42 +91,19 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <%
-                            for (Task task: DBManager.getTasks()) {
-                        %>
-                        <tr>
-                            <td><%=task.getName()%></td>
-                            <td><%=task.getDescription()%></td>
-                            <td><%=Functools.renderDeadline(task)%></td>
-                            <%
-                                boolean isOverdue = Functools.isOverdue(LocalDateTime.now(), task);
-                                if (isOverdue) {
-                            %>
-                            <td class="text-danger">Overdue</td>
-                            <% } else { %>
-                            <td class="text-<%=task.isCompleted() ? "success" : "warning" %>"><%=task.isCompleted() ? "Yes" : "No" %></td>
-                            <% } %>
-                            <td><button class="btn btn-secondary details-btn" data-bs-toggle="modal" data-bs-target="#editTaskModal"
-                                        data-id="<%=task.getId()%>"
-                                        data-name="<%=task.getName()%>"
-                                        data-description="<%=task.getDescription()%>"
-                                        data-category="<%=task.getCategory()%>"
-                                        data-deadline="<%=task.getDeadline()%>"
-                                        data-completion="<%=task.isCompleted()%>">Details</button></td>
-                        </tr>
-                        <%
-                                }
-                            }
-                        %>
+                        <% for (Task task: tasks) {%>
+                            <%@ include file="task-row.jsp" %>
+                        <% } %>
+        <%
+            }
+        %>
                         <script>
-
-
                             const editTaskModal = document.getElementById('editTaskModal');
                             editTaskModal.addEventListener('show.bs.modal', event => {
-                                // Get button that triggered the modal
+                                // Getting button
                                 const button = event.relatedTarget;
 
-                                // Extract info from data-* attributes
+                                // Data extraction
                                 const id = button.getAttribute("data-id");
                                 const name = button.getAttribute('data-name');
                                 const description = button.getAttribute('data-description');
@@ -119,18 +111,12 @@
                                 const deadline = button.getAttribute('data-deadline');
                                 const completion = button.getAttribute('data-completion');
 
-                                // Update the modal's content.
+                                // Autofill
                                 const modalNameInput = editTaskModal.querySelector('#name');
                                 const modalDescriptionInput = editTaskModal.querySelector('#description');
                                 const modalCategorySelect = editTaskModal.querySelector('#category');
                                 const modalDeadlineInput = editTaskModal.querySelector('#deadline');
                                 const modalCompletionSelect = editTaskModal.querySelector('#completed');
-                                console.log("ID:", id);
-                                console.log("Name:", name);
-                                console.log("Description:", description);
-                                console.log("Category:", category);
-                                console.log("Deadline:", deadline);
-                                console.log("Completion:", completion);
 
                                 modalNameInput.value = name;
                                 modalDescriptionInput.value = description;
@@ -140,12 +126,15 @@
 
                                 // Ensuring delete button works
                                 const deleteButton = document.querySelector("#deleteButton")
-                                deleteButton.href = "${pageContext.request.contextPath}/delete-task?id=" + id
+                                deleteButton.href = "${pageContext.request.contextPath}/delete-task?id=" + id + "&selectedCategory=<%= selectedCategory == null ? "" : selectedCategory %>";
 
                                 // Setting correct action for edit form
                                 const hiddenIdInput = document.querySelector("#hiddenIdInput")
                                 hiddenIdInput.value = id
-                                console.log(hiddenIdInput, hiddenIdInput.value)
+
+                                // Setting correct filtering category for edit form
+                                const hiddenCategoryFilterer = document.querySelector("#hiddenCategoryToFilter")
+                                hiddenCategoryFilterer.value = "<%= selectedCategory == null ? "" : selectedCategory %>";
                             });
                         </script>
                         </tbody>
