@@ -28,6 +28,7 @@ public class EditTaskServlet extends HttpServlet {
                 (String) hm.get("category"),
                 completed
         );
-        req.getRequestDispatcher("/").forward(req, resp);
+        String selectedCategory = req.getParameter("selectedCategory");
+        req.getRequestDispatcher("/?selectedCategory=" + selectedCategory).forward(req, resp);
     }
 }

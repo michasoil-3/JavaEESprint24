@@ -15,6 +15,7 @@ public class DeleteTaskServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long id = Long.parseLong(req.getParameter("id"));
         DBManager.removeTask(id);
-        req.getRequestDispatcher("/").forward(req, resp);
+        String selectedCategory = req.getParameter("selectedCategory");
+        req.getRequestDispatcher("/?selectedCategory=" + selectedCategory).forward(req, resp);
     }
 }
