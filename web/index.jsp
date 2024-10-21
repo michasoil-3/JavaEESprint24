@@ -1,7 +1,5 @@
 <%@ page import="db.DBManager" %>
 <%@ page import="models.Task" %>
-<%@ page import="functools.Functools" %>
-<%@ page import="java.time.LocalDateTime" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <% String selectedCategory = (String) request.getAttribute("selectedCategory"); %>
