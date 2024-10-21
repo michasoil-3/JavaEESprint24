@@ -1,8 +1,10 @@
 package functools;
 
+import jakarta.servlet.http.HttpServletRequest;
 import models.Task;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 
 public class Functools {
     public static String[] months = {
@@ -42,7 +44,24 @@ public class Functools {
         if (task.getDeadline() == null) {
             return false;
         }
-        return task.getDeadline().isBefore(today);
+        return task.getDeadline().isBefore(today) && !task.isCompleted();
+    }
+
+    public static void handleParametersHashmap(HashMap<String, Object> hm, HttpServletRequest req) {
+        hm.put("name", req.getParameter("name"));
+        hm.put("description", req.getParameter("description"));
+        String deadlineStr = req.getParameter("deadline");
+        if (!deadlineStr.isEmpty()) {
+            hm.put("deadline", LocalDateTime.parse(deadlineStr));
+        } else {
+            hm.put("deadline", null);
+        }
+        String category = req.getParameter("category");
+        if (category.equals("N/A")) {
+            hm.put("category", null);
+        } else {
+            hm.put("category", category.toLowerCase());
+        }
     }
 }
 
