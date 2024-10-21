@@ -59,4 +59,35 @@ public class DBManager {
     public static ArrayList<Task> getTasks() {
         return tasks;
     }
+
+    public static void removeTask(long id) {
+        Task toRemove = null;
+        for (Task task : tasks) {
+            if (task.getId() == id) {
+                toRemove = task;
+                break;
+            }
+        }
+        if (toRemove != null)
+            tasks.remove(toRemove);
+    }
+
+    public static void editTask(long id, String name, String description, LocalDateTime deadline, String category, boolean completed) {
+        Task toEdit = null;
+        for (Task task : tasks) {
+            if (task.getId() == id) {
+                toEdit = task;
+                break;
+            }
+        }
+
+        if (toEdit == null)
+            return;
+
+        toEdit.setName(name);
+        toEdit.setDescription(description);
+        toEdit.setDeadline(deadline);
+        toEdit.setCategory(category);
+        toEdit.setCompleted(completed);
+    }
 }
